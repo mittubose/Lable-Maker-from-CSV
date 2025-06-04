@@ -7,26 +7,20 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import SettingsIcon from '@mui/icons-material/Settings';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import HomeIcon from '@mui/icons-material/Home';
+import TableViewIcon from '@mui/icons-material/TableView';
 import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   width: number;
   onSettingsClick?: () => void;
-  onCsvUpload?: (file: File) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ width, onSettingsClick, onCsvUpload }) => {
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0] && onCsvUpload) {
-      onCsvUpload(e.target.files[0]);
-      e.target.value = '';
-    }
-  };
+const Sidebar: React.FC<SidebarProps> = ({ width, onSettingsClick }) => {
+  const navigate = useNavigate();
+  const handleHome = () => navigate('/');
+  const handleManageCsv = () => navigate('/csvs');
   return (
     <Drawer
       variant="permanent"
@@ -49,33 +43,24 @@ const Sidebar: React.FC<SidebarProps> = ({ width, onSettingsClick, onCsvUpload }
     >
       <Box sx={{ p: 2 }}>
         <h2 style={{ margin: 0, fontSize: 20, color: '#F3F4F6', fontWeight: 700, letterSpacing: 0.5 }}>CSV to Label</h2>
-        <Button
-          variant="outlined"
-          startIcon={<UploadFileIcon />}
-          sx={{
-            mt: 2,
-            color: '#F3F4F6',
-            borderColor: '#23262F',
-            background: '#23262F',
-            textTransform: 'none',
-            width: '100%',
-            borderRadius: 2,
-            fontWeight: 500,
-            fontSize: 15,
-            boxShadow: 'none',
-            '&:hover': { background: '#23262F', borderColor: '#F3F4F6', color: '#fff' },
-          }}
-          onClick={handleUploadClick}
-        >
-          Upload CSV
-        </Button>
-        <input
-          type="file"
-          accept=".csv"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
+        <List sx={{ mt: 2, mb: 1 }}>
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleHome} sx={{ borderRadius: 2, mx: 1, my: 0.5, color: '#F3F4F6', '&:hover': { bgcolor: '#23262F' } }}>
+              <ListItemIcon sx={{ color: '#F3F4F6' }}>
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 500, fontSize: 15 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleManageCsv} sx={{ borderRadius: 2, mx: 1, my: 0.5, color: '#F3F4F6', '&:hover': { bgcolor: '#23262F' } }}>
+              <ListItemIcon sx={{ color: '#F3F4F6' }}>
+                <TableViewIcon />
+              </ListItemIcon>
+              <ListItemText primary="Manage CSV" primaryTypographyProps={{ fontWeight: 500, fontSize: 15 }} />
+            </ListItemButton>
+          </ListItem>
+        </List>
         <Box sx={{ borderBottom: '1px solid #23262F', my: 2 }} />
       </Box>
       <List sx={{ mb: 1 }}>
