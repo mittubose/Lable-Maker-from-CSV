@@ -55,30 +55,30 @@ const LayerPanel: React.FC<LayerPanelProps> = ({ elements, setElements, selected
   };
 
   return (
-    <Box sx={{ width: 1, bgcolor: '#f4f4f8', borderTop: '1px solid #e0e0e0', p: 0, m: 0, height: '100%', minHeight: 0 }}>
-      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5, fontSize: 13, px: 1, pt: 1 }}>Layers</Typography>
-      <List dense sx={{ p: 0, m: 0 }}>
+    <Box sx={{ width: 1, bgcolor: '#23262F', borderTop: '1px solid #23262F', p: 0, m: 0, height: '100%', minHeight: 0 }}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5, fontSize: 13, px: 1, pt: 1, color: '#F3F4F6' }}>Layers</Typography>
+      <List dense sx={{ p: 0, m: 0, bgcolor: '#23262F', color: '#F3F4F6' }}>
         {elements.map((el, idx) => (
           <ListItem
             key={el.id}
             disablePadding
             secondaryAction={
               <>
-                <IconButton size="small" onClick={() => move(idx, idx - 1)} title="Move up"><ArrowUpwardIcon fontSize="inherit" /></IconButton>
-                <IconButton size="small" onClick={() => move(idx, idx + 1)} title="Move down"><ArrowDownwardIcon fontSize="inherit" /></IconButton>
-                <IconButton size="small" onClick={() => toggleProp(el.id, 'hidden')} title={el.hidden ? 'Show' : 'Hide'}>
-                  {el.hidden ? <VisibilityOffIcon fontSize="inherit" /> : <VisibilityIcon fontSize="inherit" />}
+                <IconButton size="small" onClick={() => move(idx, idx - 1)} title="Move up" sx={{ color: '#E0E0E0' }}><ArrowUpwardIcon fontSize="inherit" sx={{ color: '#E0E0E0' }} /></IconButton>
+                <IconButton size="small" onClick={() => move(idx, idx + 1)} title="Move down" sx={{ color: '#E0E0E0' }}><ArrowDownwardIcon fontSize="inherit" sx={{ color: '#E0E0E0' }} /></IconButton>
+                <IconButton size="small" onClick={() => toggleProp(el.id, 'hidden')} title={el.hidden ? 'Show' : 'Hide'} sx={{ color: '#E0E0E0' }}>
+                  {el.hidden ? <VisibilityOffIcon fontSize="inherit" sx={{ color: '#E0E0E0' }} /> : <VisibilityIcon fontSize="inherit" sx={{ color: '#E0E0E0' }} />}
                 </IconButton>
-                <IconButton size="small" onClick={() => toggleProp(el.id, 'locked')} title={el.locked ? 'Unlock' : 'Lock'}>
-                  {el.locked ? <LockIcon fontSize="inherit" /> : <LockOpenIcon fontSize="inherit" />}
+                <IconButton size="small" onClick={() => toggleProp(el.id, 'locked')} title={el.locked ? 'Unlock' : 'Lock'} sx={{ color: '#E0E0E0' }}>
+                  {el.locked ? <LockIcon fontSize="inherit" sx={{ color: '#E0E0E0' }} /> : <LockOpenIcon fontSize="inherit" sx={{ color: '#E0E0E0' }} />}
                 </IconButton>
                 <IconButton size="small" color="error" onClick={() => handleDelete(el.id)} title="Delete"><DeleteIcon fontSize="inherit" /></IconButton>
               </>
             }
-            sx={{ bgcolor: selectedId === el.id ? '#e3e8ff' : undefined, borderRadius: 1, mb: 0.25, minHeight: 32 }}
+            sx={{ bgcolor: selectedId === el.id ? '#232946' : 'transparent', borderRadius: 1, mb: 0.25, minHeight: 32, color: '#F3F4F6', '&:hover': { bgcolor: '#232946' } }}
           >
             <ListItemButton selected={selectedId === el.id} onClick={() => setSelectedId(el.id)} sx={{ minHeight: 32, px: 1 }}>
-              <ListItemIcon sx={{ minWidth: 28 }}>{getIcon(el.type)}</ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 28, color: '#E0E0E0' }}>{getIcon(el.type)}</ListItemIcon>
               <ListItemText
                 primary={el.type.charAt(0).toUpperCase() + el.type.slice(1)}
                 secondary={el.type === 'text' ? el.text : el.type === 'qr' ? el.data : undefined}

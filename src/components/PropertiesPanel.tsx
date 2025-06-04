@@ -5,14 +5,18 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import CropLandscapeIcon from '@mui/icons-material/CropLandscape';
+import CropPortraitIcon from '@mui/icons-material/CropPortrait';
 
 interface PropertiesPanelProps {
   elements: any[];
   setElements: (els: any[]) => void;
   selectedId: string | null;
   setSelectedId: (id: string | null) => void;
-  labelSize: { width: number; height: number; orientation: string };
-  setLabelSize: (size: { width: number; height: number; orientation: string }) => void;
+  labelSize: { width: number; height: number; orientation: string; unit: string };
+  setLabelSize: (size: { width: number; height: number; orientation: string; unit: string }) => void;
 }
 
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements, selectedId, setSelectedId, labelSize, setLabelSize }) => {
@@ -28,21 +32,21 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
   };
 
   const handleLabelSizeChange = (key: string, value: any) => {
-    setLabelSize({ ...labelSize, [key]: value });
+    if (key === 'orientation' && value !== labelSize.orientation) {
+      setLabelSize({
+        ...labelSize,
+        orientation: value,
+        width: labelSize.height,
+        height: labelSize.width,
+      });
+    } else {
+      setLabelSize({ ...labelSize, [key]: value });
+    }
   };
 
-  if (!el) {
-    return (
-      <Box sx={{ width: 300, bgcolor: '#f8fafc', borderLeft: '1px solid #e0e0e0', p: 2, height: '100%' }}>
-        <h3 style={{ marginTop: 0, fontSize: 15, fontWeight: 600, letterSpacing: 0.2 }}>Properties</h3>
-        <p style={{ color: '#888', fontSize: 12 }}>Select an element to edit its properties.</p>
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ width: 300, bgcolor: '#f8fafc', borderLeft: '1px solid #e0e0e0', p: 2, height: '100%' }}>
-      <h3 style={{ marginTop: 0, fontSize: 15, fontWeight: 600, letterSpacing: 0.2 }}>Properties</h3>
+    <Box sx={{ width: 300, bgcolor: '#23262F', borderLeft: '1px solid #23262F', p: 2, height: '100%' }}>
+      <h3 style={{ marginTop: 0, fontSize: 15, fontWeight: 600, letterSpacing: 0.2, color: '#F3F4F6' }}>Properties</h3>
       <Stack spacing={1.2}>
         <Box>
           <b style={{ fontSize: 13 }}>Label Size & Orientation</b>
@@ -54,8 +58,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
               onChange={e => handleLabelSizeChange('width', Number(e.target.value))}
               size="small"
               sx={{ width: 70, fontSize: 12 }}
-              InputProps={{ style: { fontSize: 12 } }}
-              InputLabelProps={{ style: { fontSize: 11 } }}
+              InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+              InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
             />
             <TextField
               label="Height"
@@ -64,23 +68,38 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
               onChange={e => handleLabelSizeChange('height', Number(e.target.value))}
               size="small"
               sx={{ width: 70, fontSize: 12 }}
-              InputProps={{ style: { fontSize: 12 } }}
-              InputLabelProps={{ style: { fontSize: 11 } }}
+              InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+              InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
             />
             <Select
-              label="Orientation"
-              value={labelSize.orientation}
-              onChange={e => handleLabelSizeChange('orientation', e.target.value)}
+              label="Unit"
+              value={labelSize.unit || 'px'}
+              onChange={e => handleLabelSizeChange('unit', e.target.value)}
               size="small"
-              sx={{ width: 100, fontSize: 12 }}
-              inputProps={{ style: { fontSize: 12 } }}
+              sx={{ width: 70, fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' }}
+              inputProps={{ style: { fontSize: 12, color: '#F3F4F6' } }}
             >
-              <MenuItem value="landscape" sx={{ fontSize: 12 }}>Landscape</MenuItem>
-              <MenuItem value="portrait" sx={{ fontSize: 12 }}>Portrait</MenuItem>
+              <MenuItem value="px" sx={{ fontSize: 12, color: '#F3F4F6' }}>px</MenuItem>
+              <MenuItem value="cm" sx={{ fontSize: 12, color: '#F3F4F6' }}>cm</MenuItem>
+              <MenuItem value="in" sx={{ fontSize: 12, color: '#F3F4F6' }}>in</MenuItem>
+              <MenuItem value="ratio" sx={{ fontSize: 12, color: '#F3F4F6' }}>ratio</MenuItem>
             </Select>
+            <Tooltip title="Landscape">
+              <IconButton color={labelSize.orientation === 'landscape' ? 'primary' : 'default'} onClick={() => handleLabelSizeChange('orientation', 'landscape')} size="small">
+                <CropLandscapeIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Portrait">
+              <IconButton color={labelSize.orientation === 'portrait' ? 'primary' : 'default'} onClick={() => handleLabelSizeChange('orientation', 'portrait')} size="small">
+                <CropPortraitIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </Stack>
         </Box>
-        {el ? (
+        {!el && (
+          <p style={{ color: '#888', fontSize: 12 }}>Select an element to edit its properties.</p>
+        )}
+        {el && (
           <>
             <div style={{ fontSize: 12 }}>
               <b>Type:</b> {el.type.charAt(0).toUpperCase() + el.type.slice(1)}
@@ -94,8 +113,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   fullWidth
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
                 <TextField
                   label="Font Size"
@@ -104,8 +123,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   onChange={e => handleChange('fontSize', Number(e.target.value))}
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
                 <TextField
                   label="Color"
@@ -113,9 +132,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   value={el.fill}
                   onChange={e => handleChange('fill', e.target.value)}
                   size="small"
-                  InputLabelProps={{ shrink: true, style: { fontSize: 11 } }}
-                  sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
+                  InputLabelProps={{ shrink: true, style: { fontSize: 11, color: '#aaa' } }}
+                  sx={{ fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
                 />
               </>
             )}
@@ -128,8 +147,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   onChange={e => handleChange('width', Number(e.target.value))}
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
                 <TextField
                   label="Height"
@@ -138,8 +157,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   onChange={e => handleChange('height', Number(e.target.value))}
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
                 <TextField
                   label="Fill Color"
@@ -147,9 +166,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   value={el.fill}
                   onChange={e => handleChange('fill', e.target.value)}
                   size="small"
-                  InputLabelProps={{ shrink: true, style: { fontSize: 11 } }}
-                  sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
+                  InputLabelProps={{ shrink: true, style: { fontSize: 11, color: '#aaa' } }}
+                  sx={{ fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
                 />
                 <TextField
                   label="Stroke Color"
@@ -157,9 +176,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   value={el.stroke}
                   onChange={e => handleChange('stroke', e.target.value)}
                   size="small"
-                  InputLabelProps={{ shrink: true, style: { fontSize: 11 } }}
-                  sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
+                  InputLabelProps={{ shrink: true, style: { fontSize: 11, color: '#aaa' } }}
+                  sx={{ fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
                 />
               </>
             )}
@@ -172,8 +191,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   fullWidth
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
                 <TextField
                   label="Size"
@@ -182,8 +201,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   onChange={e => handleChange('size', Number(e.target.value))}
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
               </>
             )}
@@ -196,8 +215,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   onChange={e => handleChange('width', Number(e.target.value))}
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
                 <TextField
                   label="Height"
@@ -206,8 +225,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
                   onChange={e => handleChange('height', Number(e.target.value))}
                   size="small"
                   sx={{ fontSize: 12 }}
-                  InputProps={{ style: { fontSize: 12 } }}
-                  InputLabelProps={{ style: { fontSize: 11 } }}
+                  InputProps={{ style: { fontSize: 12, background: '#181A1B', color: '#F3F4F6', borderRadius: 6, border: '1px solid #23262F' } }}
+                  InputLabelProps={{ style: { fontSize: 11, color: '#aaa' } }}
                 />
                 {/* Image upload coming soon */}
               </>
@@ -216,8 +235,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ elements, setElements
               Delete
             </Button>
           </>
-        ) : (
-          <p style={{ color: '#888', fontSize: 12 }}>Select an element to edit its properties.</p>
         )}
       </Stack>
     </Box>

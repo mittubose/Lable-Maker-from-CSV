@@ -5,61 +5,17 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import { Stage, Layer, Rect, Text, Group, Transformer } from 'react-konva';
 // import useImage from 'use-image'; // For real image support later
 
-const LABEL_WIDTH = 400;
-const LABEL_HEIGHT = 200;
-
-// Element types
-const initialElements = [
-  {
-    id: 'text-1',
-    type: 'text',
-    x: 120,
-    y: 80,
-    text: 'Drag me!',
-    fontSize: 28,
-    fontStyle: 'bold',
-    fill: '#232946',
-  },
-  {
-    id: 'rect-1',
-    type: 'rect',
-    x: 60,
-    y: 30,
-    width: 80,
-    height: 40,
-    fill: '#ffb800',
-    stroke: '#232946',
-    strokeWidth: 2,
-  },
-  {
-    id: 'qr-1',
-    type: 'qr',
-    x: 300,
-    y: 120,
-    size: 60,
-    data: 'https://example.com',
-  },
-  {
-    id: 'img-1',
-    type: 'image',
-    x: 250,
-    y: 40,
-    width: 60,
-    height: 60,
-    src: '', // Placeholder, no image yet
-  },
-];
-
-let idCounter = 2;
-
 interface CanvasAreaProps {
   elements: any[];
   setElements: (els: any[]) => void;
   selectedId: string | null;
   setSelectedId: (id: string | null) => void;
+  labelSize: { width: number; height: number; orientation: string; unit: string };
 }
 
-const CanvasArea: React.FC<CanvasAreaProps> = ({ elements, setElements, selectedId, setSelectedId }) => {
+let idCounter = 2;
+
+const CanvasArea: React.FC<CanvasAreaProps> = ({ elements, setElements, selectedId, setSelectedId, labelSize }) => {
   const stageRef = useRef<any>(null);
   const trRef = useRef<any>(null);
   const nodeRefs = useRef<{ [id: string]: any }>({});
@@ -160,7 +116,7 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({ elements, setElements, selected
     const spacing = 8;
     let y = 30;
     const leftX = 24;
-    const rightX = LABEL_WIDTH - 100;
+    const rightX = labelSize.width - 100;
     const newEls = elements.map(e => {
       if (e.hidden) return e;
       if (e.type === 'text' || e.type === 'rect') {
@@ -182,9 +138,9 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({ elements, setElements, selected
   };
 
   return (
-    <Box sx={{ flex: 1, bgcolor: '#fff', m: 2, borderRadius: 2, boxShadow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 0, position: 'relative' }}>
+    <Box sx={{ flex: 1, bgcolor: '#181A1B', m: 2, borderRadius: 2, boxShadow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 0, position: 'relative' }}>
       {/* Floating Toolbar */}
-      <Box sx={{ position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 10, bgcolor: '#fff', borderRadius: 2, boxShadow: 2, p: 1, display: 'flex', gap: 1 }}>
+      <Box sx={{ position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 10, bgcolor: '#23262F', borderRadius: 2, boxShadow: 2, p: 1, display: 'flex', gap: 1 }}>
         <ButtonGroup variant="contained" size="small">
           <Button onClick={() => addElement('text')}>Text</Button>
           <Button onClick={() => addElement('rect')}>Rect</Button>
@@ -194,18 +150,18 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({ elements, setElements, selected
         <Button variant="outlined" size="small" sx={{ ml: 2 }} onClick={autoAlign}>Auto Align</Button>
       </Box>
       <Stage
-        width={LABEL_WIDTH + 40}
-        height={LABEL_HEIGHT + 40}
+        width={labelSize.width + 40}
+        height={labelSize.height + 40}
         ref={stageRef}
-        style={{ background: '#f8fafc', borderRadius: 12 }}
+        style={{ background: '#fff', borderRadius: 12 }}
       >
         <Layer>
           {/* Label boundary */}
           <Rect
             x={20}
             y={20}
-            width={LABEL_WIDTH}
-            height={LABEL_HEIGHT}
+            width={labelSize.width}
+            height={labelSize.height}
             fill="#fff"
             stroke="#232946"
             strokeWidth={2}
